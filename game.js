@@ -21,6 +21,7 @@ let highScore = localStorage.getItem("highScore")
 let tutorialMode = true;
 let tutorialObjects = [];
 let isNewHighScore = false;
+let sfx = {};
 
 const config = {
   type: Phaser.AUTO,
@@ -89,6 +90,14 @@ function create() {
   });
   scoreText.setVisible(false);
   scoreText.setScrollFactor(0);
+
+  sfx.start = this.sound.add("gameStart", {
+    volume: 0.6,
+  });
+
+  sfx.gameOver = this.sound.add("gameOver", {
+    volume: 0.7,
+  });
 
   this.input.on("pointerdown", changeColor, this);
 
@@ -194,6 +203,9 @@ function createStartUI() {
 
 function startGame() {
   if (gameStarted) return;
+  if (sfx.start) {
+    sfx.start.play();
+  }
 
   gameStarted = true;
 
@@ -266,6 +278,10 @@ function hitObstacle(player, obs) {
 
 function endGame() {
   if (gameOver) return;
+
+  if (sfx.gameOver && !sfx.gameOver.isPlaying) {
+    sfx.gameOver.play();
+  }
 
   gameOver = true;
   this.physics.pause();
@@ -454,4 +470,9 @@ function createNewRecordBadge(scene, x, y) {
     repeat: -1,
     ease: "Sine.InOut",
   });
+}
+
+function preload() {
+  this.load.audio("gameStart", "assets/game-start.mp3");
+  this.load.audio("gameOver", "assets/game-over.mp3");
 }
